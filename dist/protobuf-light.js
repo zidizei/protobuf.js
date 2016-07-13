@@ -455,6 +455,9 @@
         // Id numbers
         ID: /^(?:[1-9][0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+)$/,
 
+        // GUID
+        GUID: /^([0-9a-fA-F]){8}\-(([0-9a-fA-F]){4}\-){3}([0-9a-fA-F]){12}$/,
+
         // Negative id numbers (enum values)
         NEGID: /^\-?(?:[1-9][0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+)$/,
 

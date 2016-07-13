@@ -1,0 +1,11 @@
+message Guid {
+  optional fixed64 lo = 1;
+  optional fixed64 hi = 2;
+}
+
+message TestGuid {
+  required Guid id = 1 [default = 00000000-0000-0000-0000-000000000000];
+}
+
+// TestGuid should encode to "0A 12 09 96 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 00"
+// with TestGuid#a=150

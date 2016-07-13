@@ -179,6 +179,20 @@ function mkNumber(val) {
     throw Error("illegal number value: " + (sign < 0 ? '-' : '') + val);
 }
 
+/**
+ * Converts a GUID string to Long.
+ * @param {string} val
+ * @returns {Long}
+ * @inner
+ */
+function mkGuid(val) {
+    var hex = val.replace(/\-/g, '');
+    var high = ByteBuffer.Long.fromString(hex.substring(0, 16), 16);
+    var low = ByteBuffer.Long.fromString(hex.substring(16, 32), 16);
+
+    return { lo: low, hi: high }
+}
+
 // ----- Reading ------
 
 /**
@@ -217,6 +231,8 @@ ParserPrototype._readValue = function(mayBeTypeRef) {
         return mkNumber(token);
     if (Lang.BOOL.test(token))
         return (token.toLowerCase() === 'true');
+    if (Lang.GUID.test(token))
+        return mkGuid(token);
     if (mayBeTypeRef && Lang.TYPEREF.test(token))
         return token;
     throw Error("illegal value: "+token);

@@ -289,6 +289,37 @@
             test.done();
         },
 
+        "guid": function(test) {
+            try{
+                var builder = ProtoBuf.loadProtoFile(__dirname+"/guid.proto");
+                var TestGuid = builder.build("TestGuid");
+                var Guid     = builder.build("Guid");
+                test.ok(typeof TestGuid == 'function');
+                test.ok(typeof Guid == 'function');
+
+                var defaultGuid = new TestGuid();
+                test.ok(defaultGuid instanceof ProtoBuf.Builder.Message);
+                test.equal(defaultGuid.id.lo, 0);
+
+                var guid = new Guid(new ByteBuffer.Long.fromNumber(150), new ByteBuffer.Long.fromNumber(0));
+                var inst = new TestGuid(guid);
+                test.ok(inst instanceof ProtoBuf.Builder.Message);
+                test.equal(inst.id.lo.toString(), 150);
+
+                var size = inst.calculate();
+                var bb = new ByteBuffer(3);
+                inst.encode(bb);
+                test.strictEqual(bb.offset, size);
+                test.equal(bb.flip().toString("debug"), "<0A 12 09 96 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 00>");
+                var instDec = TestGuid.decode(bb);
+                test.equal(instDec.id.lo.toString(), 150);
+
+            } catch (e) {
+                fail(e);
+            }
+            test.done();
+        },
+
         // Check encode/decode against a table of known correct pairs.
         // Note that javascript ArrayBuffer does not support signed Zero or NaN
         // bertdouglas (https://github.com/bertdouglas)

@@ -455,6 +455,9 @@
         // Id numbers
         ID: /^(?:[1-9][0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+)$/,
 
+        // GUID
+        GUID: /^([0-9a-fA-F]){8}\-(([0-9a-fA-F]){4}\-){3}([0-9a-fA-F]){12}$/,
+
         // Negative id numbers (enum values)
         NEGID: /^\-?(?:[1-9][0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+)$/,
 
@@ -854,6 +857,20 @@
             throw Error("illegal number value: " + (sign < 0 ? '-' : '') + val);
         }
 
+        /**
+         * Converts a GUID string to Long.
+         * @param {string} val
+         * @returns {Long}
+         * @inner
+         */
+        function mkGuid(val) {
+            var hex = val.replace(/\-/g, '');
+            var high = ByteBuffer.Long.fromString(hex.substring(0, 16), 16);
+            var low = ByteBuffer.Long.fromString(hex.substring(16, 32), 16);
+
+            return { lo: low, hi: high }
+        }
+
         // ----- Reading ------
 
         /**
@@ -892,6 +909,8 @@
                 return mkNumber(token);
             if (Lang.BOOL.test(token))
                 return (token.toLowerCase() === 'true');
+            if (Lang.GUID.test(token))
+                return mkGuid(token);
             if (mayBeTypeRef && Lang.TYPEREF.test(token))
                 return token;
             throw Error("illegal value: "+token);
